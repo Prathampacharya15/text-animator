@@ -1,9 +1,9 @@
 // electron/electron.js
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
+import { getFonts } from "font-list";  // ✅ use font-list
 
-// __dirname workaround in ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -12,9 +12,9 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"), // optional
+      preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
     },
   });
 
@@ -30,4 +30,15 @@ app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
+});
+
+// --- IPC handler for fonts ---
+ipcMain.handle("get-fonts", async () => {
+  try {
+    const fonts = await getFonts(); // returns array of font family names
+    return fonts.sort();
+  } catch (err) {
+    console.error("Error fetching fonts:", err);
+    return ["Arial", "Times New Roman", "Courier New"]; // fallback
+  }
 });

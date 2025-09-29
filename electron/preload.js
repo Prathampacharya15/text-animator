@@ -1,5 +1,7 @@
-const { contextBridge } = require("electron");
+// preload.js
+const { contextBridge, ipcRenderer } = require("electron");
 
+// Expose a safe API surface
 contextBridge.exposeInMainWorld("electronAPI", {
-  log: (msg) => console.log(msg)
+  getFonts: () => ipcRenderer.invoke("get-fonts") // async call
 });

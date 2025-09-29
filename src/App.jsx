@@ -1,22 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextScene from "./components/TextScene";
-
 
 export default function App() {
   const [text, setText] = useState("Hello");
   const [animation, setAnimation] = useState("FlyIn");
   const [trigger, setTrigger] = useState(0);
+  const [fonts, setFonts] = useState([]);
+  const [selectedFont, setSelectedFont] = useState("Arial");
+
+  useEffect(() => {
+    const loadFonts = async () => {
+      if (window.electronAPI?.getFonts) {
+        try {
+          const systemFonts = await window.electronAPI.getFonts(); // ✅ async/await
+          setFonts(systemFonts);
+          if (systemFonts.length) setSelectedFont(systemFonts[0]);
+        } catch (err) {
+          console.error("Failed to load fonts:", err);
+          setFonts(["Arial", "Times New Roman", "Courier New"]); // fallback
+        }
+      } else {
+        setFonts(["Arial", "Times New Roman", "Courier New"]); // fallback
+      }
+    };
+
+    loadFonts();
+  }, []);
+
+  const handleFontChange = (e) => {
+    setSelectedFont(e.target.value);
+    setTrigger((t) => t + 1); // re-trigger text update
+  };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#111", color: "#00ffcc" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        background: "#111",
+        color: "#00ffcc",
+      }}
+    >
       {/* Controls */}
-      <div style={{ padding: 10, display: "flex", gap: 10, alignItems: "center" }}>
+      <div
+        style={{
+          padding: 10,
+          display: "flex",
+          gap: 10,
+          alignItems: "center",
+        }}
+      >
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Enter text (press Enter for new line)"
+          placeholder="Enter text"
           style={{ fontSize: 16, padding: 5, width: 300, height: 80 }}
         />
+
         <select
           value={animation}
           onChange={(e) => setAnimation(e.target.value)}
@@ -34,6 +75,20 @@ export default function App() {
           <option value="MaskedLines">Masked Lines</option>
           <option value="SplitTextEffect">Revert</option>
         </select>
+
+        {/* Font selector */}
+        <select
+          value={selectedFont}
+          onChange={handleFontChange}
+          style={{ fontSize: 16, padding: 5 }}
+        >
+          {fonts.map((f, i) => (
+            <option key={i} value={f}>
+              {f}
+            </option>
+          ))}
+        </select>
+
         <button
           onClick={() => setTrigger((t) => t + 1)}
           style={{ fontSize: 16, padding: "5px 10px", cursor: "pointer" }}
@@ -44,7 +99,12 @@ export default function App() {
 
       {/* 3D Text Canvas */}
       <div style={{ flex: 1, minHeight: 500 }}>
-        <TextScene text={text} animation={animation} trigger={trigger} />
+        <TextScene
+          text={text}
+          animation={animation}
+          trigger={trigger}
+          font={selectedFont}
+        />
       </div>
     </div>
   );

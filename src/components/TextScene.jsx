@@ -5,9 +5,9 @@ import { useThreeScene } from "../hooks/useThreeScene";
 import { useLetters } from "../hooks//useLetters";
 import { animateLetters } from "../animations/animations";
 
-export default function TextScene({ text, animation, trigger }) {
+export default function TextScene({ text, animation, trigger,font}) {
   const { mountRef, canvasRef, textureRef } = useThreeScene();
-  const lettersRef = useLetters(text, canvasRef);
+  const lettersRef = useLetters(text, canvasRef,font);
 
   // --- Redraw function ---
   const redraw = () => {
@@ -16,7 +16,7 @@ export default function TextScene({ text, animation, trigger }) {
     const texture = textureRef.current;
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.font = "60px 'Tangerine', cursive";
+    ctx.font = `60px "${font}", sans-serif`;
     ctx.fillStyle = "#00ffcc";
     ctx.textBaseline = "top";
 
@@ -37,7 +37,7 @@ export default function TextScene({ text, animation, trigger }) {
   useEffect(() => {
     if (!lettersRef.current.length) return;
 
-    // Optional: Reset letters before animation
+    
     lettersRef.current.forEach((letter) => {
       letter.rot = 0;
       letter.scale = 1;
@@ -48,7 +48,7 @@ export default function TextScene({ text, animation, trigger }) {
     const anims = animateLetters(lettersRef.current, animation, redraw);
 
     return () => anims.forEach((a) => a.kill?.());
-  }, [text, trigger]); // <-- add trigger here
+  }, [text, trigger]);
 
   return (
     <div

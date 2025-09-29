@@ -50,21 +50,24 @@ export function useThreeScene() {
       side: THREE.DoubleSide,
     });
     const cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({color:0xff0000}));
-cube.position.set(0, 0, 0);
-scene.add(cube);
+    cube.position.set(0, 0, 0);
 
+const gridHelper = new THREE.GridHelper(500, 1000, 0x00ffcc, 0x333333);
+gridHelper.rotation.x = Math.PI / 2
 const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), new THREE.MeshStandardMaterial({color:0x00ff00}));
 sphere.position.set(-2, 0, 0);
-scene.add(sphere);
+
     const plane = new THREE.Mesh(geometry, material);
     plane.position.z = 5
     scene.add(plane);
     scene.add(sphere);
     scene.add(cube)
+    scene.add(gridHelper);
 
     // Render loop
     const animate = () => {
       controls.update();
+    
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };

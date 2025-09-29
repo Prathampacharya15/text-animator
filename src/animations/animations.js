@@ -59,14 +59,25 @@ export function animateLetters(letters, animation, redraw) {
       break;
 
     case "SplitTextEffect":
-      anims = letters.map((letter, i) =>
-        gsap.fromTo(
-          letter,
-          { y: letter.y + 80, rot: Math.PI, scale: 0, opacity: 0 },
-          { y: letter.y, rot: 0, scale: 1, opacity: 1, duration: 3, delay: i * 0.05, ease: "back", onUpdate: redraw }
-        )
-      );
-      break;
+  let totalDuration = 0.5; 
+  anims = letters.map((letter, i) =>
+    gsap.fromTo(
+      letter,
+      { y: letter.y + 80, rot: Math.PI, scale: 0, opacity: 0 },
+      { 
+        y: letter.y, 
+        rot: 0, 
+        scale: 1, 
+        opacity: 1, 
+        duration: totalDuration, 
+        delay: i * totalDuration, // each letter starts after the previous one
+        ease: "back.out(1.7)", 
+        onUpdate: redraw 
+      }
+    )
+  );
+  break;
+
     
     case "MaskedLines": {
       // Group letters by their y position (lines)
@@ -102,6 +113,7 @@ export function animateLetters(letters, animation, redraw) {
         anims.push(tl);
       });
       break;
+      
     }
 
     
