@@ -9,7 +9,7 @@ export function useLetters(text, canvasRef,font = "Arial") {
     const ctx = canvasRef.current;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.font = `60px "${font}", sans-serif`;
-    ctx.fillStyle = "#00ffcc";
+    ctx.fillStyle = "white";
     ctx.textBaseline = "top";
 
     const words = text.split(" ");
